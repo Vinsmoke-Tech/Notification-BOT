@@ -1,0 +1,45 @@
+name: WhatsApp Alarm Bot via Zawa
+
+on:
+  schedule:
+    - cron: '0 21 * * *'     # Jam 04:00 WIB
+    - cron: '0 0 * * *'      # Jam 07:00 WIB
+    - cron: '30 9 * * *'     # Jam 16:30 WIB
+  workflow_dispatch:
+
+jobs:
+  send-wa:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install axios dotenv
+
+      - name: Setup .env file from secrets
+        run: |
+          echo "ZAWA_ID=${{ secrets.ZAWA_ID }}" >> .env
+          echo "ZAWA_SESSION_ID=${{ secrets.ZAWA_SESSION_ID }}" >> .env
+          echo "ZAWA_TO=6285602678871" >> .env
+
+      - name: Debug .env (non-sensitive only)
+        run: grep "ZAWA_TO" .env || true
+
+      - name: Alarm Pagi - 04.00
+        if: github.event.schedule == '0 21 * * *' || github.event_name == 'workflow_dispatch'
+        run: node send-zawa.js "⏰ Selamat pagi! Waktunya bangun dan mulai hari dengan produktif 💪"
+
+      - name: Absen Pagi - 07.00
+        if: github.event.schedule == '0 0 * * *' || github.event_name == 'workflow_dispatch'
+        run: node send-zawa.js "📝 Jangan lupa absen pagi ya!"
+
+      - name: Absen Sore - 16.30
+        if: github.event.schedule == '30 9 * * *' || github.event_name == 'workflow_dispatch'
+        run: node send-zawa.js "📌 Waktunya absen sore!"
