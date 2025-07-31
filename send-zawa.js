@@ -24,7 +24,7 @@ axios.post(API_URL, {
     'Content-Type': 'application/json'
   }
 }).then(() => {
-  console.log("✅ Message sent to:", TO);
+  console.log("✅ Message sent to:", "089670674442");
 }).catch(err => {
   console.error("❌ Failed:", err.response?.data || err.message);
   console.log({ ID, SESSION_ID, TO, TEXT });
